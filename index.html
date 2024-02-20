@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Final Fantasy XIV Island Sanctuary Presets Loader</title>
+  </head>
+  <body>
+    <main>
+      <label for="answers">Answers:</label>
+      <textarea name="answers" id="answers" rows="15" cols="60"></textarea>
+      <input type="button" value="Generate Codes" id="generate" />
+      <p id="codes"></p>
+      <script type="module">
+        import { parseLine, findByShortName } from "./modules/parser.js";
+
+        const button = document.getElementById("generate");
+        const answers = document.getElementById("answers");
+        const codes = document.getElementById("codes");
+
+        button.addEventListener("click", generateCode);
+
+        function generateCode() {
+          let output = "";
+          const lines = answers.value.split("\n");
+
+          for (const i in lines) {
+            const items = parseLine(lines[i]);
+            if (items.length < 3) {
+              continue;
+            }
+            for (const j in items) {
+              if (output != "") {
+                output += " ";
+              }
+              const p = findByShortName(items[j]);
+              if (!p) {
+                output += "31";
+              } else {
+                output += p["id"].toString(16).padStart(2, '0');
+              }
+              output += " 31 31 31";
+            }
+            for (let j = items.length; j < 6; j++) {
+              if (output != "") {
+                output += " ";
+              }
+              output += "31 31 31 31";
+            }
+          }
+          codes.innerHTML = output;
+        }
+      </script>
+    </main>
+  </body>
+</html>
